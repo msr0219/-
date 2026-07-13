@@ -1,0 +1,11 @@
+PLAYER=com.tedu.element.Player
+ENEMY_SMALL=com.tedu.element.EnemySmall
+ENEMY_MEDIUM=com.tedu.element.EnemyMedium
+ENEMY_LARGE=com.tedu.element.EnemyLarge
+ELITE_PRO=com.tedu.element.ElitePro
+BOSS=com.tedu.element.Boss
+PLAYER_BULLET=com.tedu.element.PlayerBullet
+ENEMY_BULLET=com.tedu.element.EnemyBullet
+POWERUP=com.tedu.element.PowerUp
+EXPLOSION=com.tedu.element.Explosion
+BACKGROUND=com.tedu.element.Background
