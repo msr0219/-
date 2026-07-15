@@ -54,7 +54,6 @@ public class GameLoad {
                 if (!line.isEmpty() && !line.startsWith("#")) {
                     String[] parts = line.split("=");
                     if (parts.length == 2) {
-                        System.out.println(parts[0] + " " + parts[1]);
                         String key = parts[0].trim();
                         String path = parts[1].trim();
                         ImageIcon icon = new ImageIcon(getClass().getResource("/" + path));

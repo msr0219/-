@@ -63,51 +63,58 @@ public class ElementManager {
         score += (int) (baseScore * multiplier);
     }
 
-    public void clearEnemies() {
-        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_SMALL)) {
-            enemy.setLive(false);
-        }
-        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_MEDIUM)) {
-            enemy.setLive(false);
-        }
-        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_LARGE)) {
-            enemy.setLive(false);
-        }
-        for (ElementObj enemy : gameElements.get(GameElement.ELITE_PRO)) {
-            enemy.setLive(false);
-        }
-        for (ElementObj bullet : gameElements.get(GameElement.ENEMY_BULLET)) {
-            bullet.setLive(false);
-        }
-    }
+//    public void clearEnemies() {
+//        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_SMALL)) {
+//            enemy.setLive(false);
+//        }
+//        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_MEDIUM)) {
+//            enemy.setLive(false);
+//        }
+//        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_LARGE)) {
+//            enemy.setLive(false);
+//        }
+//        for (ElementObj enemy : gameElements.get(GameElement.ELITE_PRO)) {
+//            enemy.setLive(false);
+//        }
+//        for (ElementObj bullet : gameElements.get(GameElement.ENEMY_BULLET)) {
+//            bullet.setLive(false);
+//        }
+//    }
 
     public void damageAllEnemies(int damage) {
+        System.out.println("Enemy Plane Damaged");
         for (ElementObj enemy : gameElements.get(GameElement.ENEMY_SMALL)) {
             if (enemy.isLive()) {
+                System.out.println("Small Enemy Plane Damaged");
                 ((EnemyPlane) enemy).takeDamage(damage);
             }
         }
         for (ElementObj enemy : gameElements.get(GameElement.ENEMY_MEDIUM)) {
+            System.out.println("Medium Enemy Plane Damaged");
             if (enemy.isLive()) {
                 ((EnemyPlane) enemy).takeDamage(damage);
             }
         }
         for (ElementObj enemy : gameElements.get(GameElement.ENEMY_LARGE)) {
+            System.out.println("Large Enemy Plane Damaged");
             if (enemy.isLive()) {
                 ((EnemyPlane) enemy).takeDamage(damage);
             }
         }
         for (ElementObj enemy : gameElements.get(GameElement.ELITE_PRO)) {
+            System.out.println("Elite Pro Enemy Plane Damaged");
             if (enemy.isLive()) {
                 ((EnemyPlane) enemy).takeDamage(damage);
             }
         }
         for (ElementObj enemy : gameElements.get(GameElement.BOSS)) {
+              System.out.println("Boss Enemy Plane Damaged");
             if (enemy.isLive()) {
                 ((EnemyPlane) enemy).takeDamage(damage);
             }
         }
         for (ElementObj bullet : gameElements.get(GameElement.ENEMY_BULLET)) {
+            System.out.println("Enemy Bullet Damaged");
             bullet.setLive(false);
         }
     }

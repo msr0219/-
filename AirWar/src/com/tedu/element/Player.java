@@ -12,13 +12,11 @@ public abstract class Player extends ElementObj {
     protected int hp = 3;
     protected int powerLevel = 1;
     protected int bulletDamage = 1;
-    protected boolean hasShield = false;
     protected int speed = 10;
     protected long lastShootTime = 0;
     protected int shootInterval = 200;
     protected HashSet<Integer> keys = new HashSet<>();
     protected ElementManager em = ElementManager.getManager();
-    protected ImageIcon shieldIcon;
     protected static final int HITBOX_SIZE = 5;
 
     public Player() {
@@ -29,9 +27,6 @@ public abstract class Player extends ElementObj {
     public void showElement(Graphics g) {
         if (icon != null) {
             g.drawImage(icon.getImage(), x, y, width / 2, height / 2, null);
-        }
-        if (hasShield && shieldIcon != null) {
-            g.drawImage(shieldIcon.getImage(), x - 5, y - 5, shieldIcon.getIconWidth() / 2, shieldIcon.getIconHeight() / 2, null);
         }
         if (isSlowing()) {
             showHitbox(g);
@@ -98,10 +93,6 @@ public abstract class Player extends ElementObj {
     }
 
     public void takeDamage(int damage) {
-        if (hasShield) {
-            hasShield = false;
-            return;
-        }
         hp -= damage;
         if (hp <= 0) {
             hp = 0;
@@ -121,10 +112,6 @@ public abstract class Player extends ElementObj {
         if (hp < 5) hp++;
     }
 
-    public void addShield() {
-        hasShield = true;
-    }
-
     public void bomb() {
         em.damageAllEnemies(100);
     }
@@ -135,7 +122,6 @@ public abstract class Player extends ElementObj {
     public int getMaxPowerLevel() { return 5; }
     public int getBulletDamage() { return bulletDamage; }
     public int getMaxBulletDamage() { return 5; }
-    public boolean isHasShield() { return hasShield; }
 
     public Rectangle getHitbox() {
         int hitboxX = x + width / 4 - HITBOX_SIZE / 2;

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="AirWar:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/AirWar_jar</output-path>
+    <root id="archive" name="AirWar.jar">
+      <element id="module-output" name="AirWar" />
+    </root>
+  </artifact>
+</component>

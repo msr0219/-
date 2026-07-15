@@ -172,9 +172,6 @@ public class GameMainJPanel extends JPanel {
             g.drawString("生命: " + player.getHp() + "/" + player.getMaxHp(), 400, 30);
             g.drawString("火力: " + player.getPowerLevel() + "/" + player.getMaxPowerLevel(), 400, 55);
             g.drawString("伤害: " + player.getBulletDamage() + "/" + player.getMaxBulletDamage(), 400, 80);
-            if (player.isHasShield()) {
-                g.drawString("护盾: ON", 400, 105);
-            }
         }
 
         drawBossHealthBar(g);
@@ -263,7 +260,6 @@ public class GameMainJPanel extends JPanel {
         g.drawString("子弹+ - 提升伤害", 160, 435);
         g.drawString("炸弹 - 对全场敌人造成伤害", 130, 460);
         g.drawString("血包 - 恢复生命", 170, 485);
-        g.drawString("护盾 - 抵挡一次伤害", 160, 510);
 
         g.setColor(Color.GREEN);
         g.setFont(getChineseFont(Font.BOLD, 24));
