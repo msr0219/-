@@ -49,7 +49,7 @@ public abstract class EnemyPlane extends ElementObj {
 
     protected void shoot() {
         EnemyBullet bullet = new EnemyBullet();
-        bullet.setX(x + width / 2 - 5);
+        bullet.setX(x + width / 2);
         bullet.setY(y + height);
         bullet.setIcon(GameLoad.getLoad().getImage("enemy_bullet"));
         em.addElement(bullet, GameElement.ENEMY_BULLET);
@@ -80,4 +80,23 @@ public abstract class EnemyPlane extends ElementObj {
 
     public int getHp() { return hp; }
     public int getScore() { return score; }
+
+    public void applyDifficulty(String gameMode) {
+        switch (gameMode) {
+            case "EASY":
+                hp = (int) (hp * 0.5);
+                shootInterval = (int) (shootInterval * 2);
+                break;
+            case "HARD":
+                hp = (int) (hp * 2);
+                shootInterval = (int) (shootInterval * 0.5);
+                break;
+        }
+        if (hp < 1) hp = 1;
+        if (shootInterval < 0) shootInterval = 0;
+    }
+
+    public int getMaxHp() {
+        return hp;
+    }
 }

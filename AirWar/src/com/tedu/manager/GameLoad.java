@@ -117,19 +117,59 @@ public class GameLoad {
             case 1: return 3;
             case 2: return 4;
             case 3: return 5;
+            case 4: return 6;
+            case 5: return 7;
             default: return 3;
         }
     }
 
+    public int getMaxLevel() {
+        return 5;
+    }
+
+    public int getBossHp(int level) {
+        return 100 * (int) Math.pow(2, level - 1);
+    }
+
     private void createEnemy(String type, int x, int y) {
-        ElementObj obj = getObj(type);
+        ElementObj obj = null;
+        boolean isBeliar = false;
+        
+        if (type.equals("BOSS") && em.getLevel() == 5) {
+            try {
+                Class<?> clazz = Class.forName("com.tedu.element.BeliarBoss");
+                obj = (ElementObj) clazz.getDeclaredConstructor().newInstance();
+                isBeliar = true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                obj = getObj(type);
+            }
+        } else {
+            obj = getObj(type);
+        }
+        
         if (obj != null) {
             obj.setX(x);
             obj.setY(y);
-            ImageIcon icon = getImage(type.toLowerCase().replace("_", "_"));
-            if (icon == null) {
-                icon = getImage(type.toLowerCase());
+            if (type.equals("BOSS")) {
+                Boss boss = (Boss) obj;
+                int baseHp = getBossHp(em.getLevel());
+                boss.setMaxHp(baseHp);
+                boss.applyDifficulty(em.getGameMode());
+            } else if (obj instanceof EnemyPlane) {
+                ((EnemyPlane) obj).applyDifficulty(em.getGameMode());
             }
+            
+            ImageIcon icon;
+            if (isBeliar) {
+                icon = getImage("beliar");
+            } else {
+                icon = getImage(type.toLowerCase().replace("_", "_"));
+                if (icon == null) {
+                    icon = getImage(type.toLowerCase());
+                }
+            }
+            
             if (icon != null) {
                 obj.setIcon(icon);
             }
@@ -146,10 +186,24 @@ public class GameLoad {
     }
 
     public void createPlayer() {
-        Player player = new Player();
+        createPlayer("NAILONG");
+    }
+
+    public void createPlayer(String characterType) {
+        Player player;
+        ImageIcon icon;
+        
+        if ("NAIWA".equals(characterType)) {
+            player = new NaiwaPlayer();
+            icon = getImage("naiwa");
+        } else {
+            player = new NailongPlayer();
+            icon = getImage("player");
+        }
+        
         player.setX(250 - 25);
         player.setY(600);
-        player.setIcon(getImage("player"));
+        player.setIcon(icon);
         em.addElement(player, GameElement.PLAYER);
     }
 

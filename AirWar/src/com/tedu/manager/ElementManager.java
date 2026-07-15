@@ -15,6 +15,7 @@ public class ElementManager {
     private int wave = 1;
     private int combo = 0;
     private long lastKillTime = 0;
+    private String gameMode = "NORMAL";
 
     private ElementManager() {
         for (GameElement ge : GameElement.values()) {
@@ -75,8 +76,36 @@ public class ElementManager {
         for (ElementObj enemy : gameElements.get(GameElement.ELITE_PRO)) {
             enemy.setLive(false);
         }
+        for (ElementObj bullet : gameElements.get(GameElement.ENEMY_BULLET)) {
+            bullet.setLive(false);
+        }
+    }
+
+    public void damageAllEnemies(int damage) {
+        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_SMALL)) {
+            if (enemy.isLive()) {
+                ((EnemyPlane) enemy).takeDamage(damage);
+            }
+        }
+        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_MEDIUM)) {
+            if (enemy.isLive()) {
+                ((EnemyPlane) enemy).takeDamage(damage);
+            }
+        }
+        for (ElementObj enemy : gameElements.get(GameElement.ENEMY_LARGE)) {
+            if (enemy.isLive()) {
+                ((EnemyPlane) enemy).takeDamage(damage);
+            }
+        }
+        for (ElementObj enemy : gameElements.get(GameElement.ELITE_PRO)) {
+            if (enemy.isLive()) {
+                ((EnemyPlane) enemy).takeDamage(damage);
+            }
+        }
         for (ElementObj enemy : gameElements.get(GameElement.BOSS)) {
-            enemy.setLive(false);
+            if (enemy.isLive()) {
+                ((EnemyPlane) enemy).takeDamage(damage);
+            }
         }
         for (ElementObj bullet : gameElements.get(GameElement.ENEMY_BULLET)) {
             bullet.setLive(false);
@@ -124,4 +153,6 @@ public class ElementManager {
     public int getWave() { return wave; }
     public void setWave(int wave) { this.wave = wave; }
     public int getCombo() { return combo; }
+    public String getGameMode() { return gameMode; }
+    public void setGameMode(String gameMode) { this.gameMode = gameMode; }
 }

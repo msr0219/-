@@ -28,10 +28,28 @@ public class GameKeyListener implements KeyListener {
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
 
+        if (panel.isStartScreen()) {
+            handleStartScreen(key);
+            return;
+        }
+
+        if (panel.isHelpScreen()) {
+            handleHelpScreen(key);
+            return;
+        }
+
+        if (panel.isModeScreen()) {
+            handleModeScreen(key);
+            return;
+        }
+
+        if (panel.isCharacterScreen()) {
+            handleCharacterScreen(key);
+            return;
+        }
+
         if (key == KeyEvent.VK_ENTER) {
-            if (panel.isStartScreen()) {
-                panel.startGame();
-            } else if (panel.isGameOverScreen()) {
+            if (panel.isGameOverScreen()) {
                 panel.showStartScreen();
             } else if (panel.isGameWonScreen()) {
                 panel.showStartScreen();
@@ -39,8 +57,24 @@ public class GameKeyListener implements KeyListener {
             return;
         }
 
-        if (key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE) {
-            if (gameThread != null && !gameThread.isGameOver() && !panel.isStartScreen()) {
+        if (key == KeyEvent.VK_P) {
+            if (gameThread != null && !gameThread.isGameOver()) {
+                gameThread.pause();
+                if (gameThread.isPaused()) {
+                    panel.showPause();
+                } else {
+                    panel.hidePause();
+                }
+            }
+            return;
+        }
+
+        if (key == KeyEvent.VK_ESCAPE) {
+            if (gameThread != null && gameThread.isPaused()) {
+                panel.showStartScreen();
+                return;
+            }
+            if (gameThread != null && !gameThread.isGameOver()) {
                 gameThread.pause();
                 if (gameThread.isPaused()) {
                     panel.showPause();
@@ -55,6 +89,53 @@ public class GameKeyListener implements KeyListener {
         if (!players.isEmpty()) {
             Player player = (Player) players.get(0);
             player.keyClick(true, key);
+        }
+    }
+
+    private void handleStartScreen(int key) {
+        if (key == KeyEvent.VK_ENTER) {
+            int selected = panel.getSelectedStartOption();
+            if (selected == 0) {
+                panel.showModeScreen();
+            } else if (selected == 1) {
+                panel.showHelpScreen();
+            } else if (selected == 2) {
+                System.exit(0);
+            }
+        } else if (key == KeyEvent.VK_UP) {
+            panel.prevStartOption();
+        } else if (key == KeyEvent.VK_DOWN) {
+            panel.nextStartOption();
+        }
+    }
+
+    private void handleHelpScreen(int key) {
+        if (key == KeyEvent.VK_ESCAPE) {
+            panel.showStartScreen();
+        }
+    }
+
+    private void handleModeScreen(int key) {
+        if (key == KeyEvent.VK_ENTER) {
+            panel.showCharacterScreen();
+        } else if (key == KeyEvent.VK_UP) {
+            panel.prevMode();
+        } else if (key == KeyEvent.VK_DOWN) {
+            panel.nextMode();
+        } else if (key == KeyEvent.VK_ESCAPE) {
+            panel.showStartScreen();
+        }
+    }
+
+    private void handleCharacterScreen(int key) {
+        if (key == KeyEvent.VK_ENTER) {
+            panel.startGame();
+        } else if (key == KeyEvent.VK_LEFT) {
+            panel.prevCharacter();
+        } else if (key == KeyEvent.VK_RIGHT) {
+            panel.nextCharacter();
+        } else if (key == KeyEvent.VK_ESCAPE) {
+            panel.showModeScreen();
         }
     }
 

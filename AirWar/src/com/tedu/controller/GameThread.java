@@ -16,6 +16,11 @@ public class GameThread implements Runnable {
     private boolean paused = false;
     private boolean gameOver = false;
     private boolean gameWon = false;
+    private boolean waitingForNextWave = false;
+    private long waitStartTime = 0;
+    private static final long WAVE_DELAY = 2000;
+    private static final long LEVEL_DELAY = 3000;
+    private boolean waitingForLevel = false;
 
     public GameThread(GameMainJPanel panel) {
         this.panel = panel;
@@ -68,19 +73,24 @@ public class GameThread implements Runnable {
         for (ElementObj playerObj : players) {
             Player player = (Player) playerObj;
             if (!player.isLive()) continue;
+            Rectangle playerHitbox = player.getHitbox();
 
             for (ElementObj enemyObj : enemies) {
                 if (!enemyObj.isLive()) continue;
-                if (player.getRectangle().intersects(enemyObj.getRectangle())) {
-                    player.takeDamage();
+                if (playerHitbox.intersects(enemyObj.getRectangle())) {
                     EnemyPlane enemy = (EnemyPlane) enemyObj;
-                    enemy.takeDamage(999);
+                    if (enemyObj.getType() == GameElement.BOSS) {
+                        player.takeDamage(100);
+                    } else {
+                        player.takeDamage();
+                        enemy.takeDamage(999);
+                    }
                 }
             }
 
             for (ElementObj bulletObj : enemyBullets) {
                 if (!bulletObj.isLive()) continue;
-                if (player.getRectangle().intersects(bulletObj.getRectangle())) {
+                if (playerHitbox.intersects(bulletObj.getRectangle())) {
                     player.takeDamage();
                     bulletObj.setLive(false);
                 }
@@ -107,18 +117,8 @@ public class GameThread implements Runnable {
                     if (!enemy.isLive()) {
                         dropPowerUp(enemyObj);
                     }
-                    if (bullet.getDamage() < 3) {
-                        bullet.setLive(false);
-                    }
-                    break;
-                }
-            }
-
-            for (ElementObj enemyBulletObj : enemyBullets) {
-                if (!enemyBulletObj.isLive()) continue;
-                if (bullet.getRectangle().intersects(enemyBulletObj.getRectangle())) {
                     bullet.setLive(false);
-                    enemyBulletObj.setLive(false);
+                    break;
                 }
             }
         }
@@ -153,6 +153,24 @@ public class GameThread implements Runnable {
     }
 
     private void checkWaveComplete() {
+        if (waitingForNextWave || waitingForLevel) {
+            long now = System.currentTimeMillis();
+            if (waitingForNextWave && now - waitStartTime >= WAVE_DELAY) {
+                waitingForNextWave = false;
+                int currentLevel = em.getLevel();
+                em.setWave(em.getWave() + 1);
+                gl.loadLevel(currentLevel);
+            } else if (waitingForLevel && now - waitStartTime >= LEVEL_DELAY) {
+                waitingForLevel = false;
+                int currentLevel = em.getLevel();
+                em.setLevel(currentLevel + 1);
+                em.setWave(1);
+                gl.switchBackground(currentLevel + 1);
+                gl.loadLevel(em.getLevel());
+            }
+            return;
+        }
+
         List<ElementObj> enemies = em.getElementsByType(GameElement.ENEMY_SMALL);
         enemies.addAll(em.getElementsByType(GameElement.ENEMY_MEDIUM));
         enemies.addAll(em.getElementsByType(GameElement.ENEMY_LARGE));
@@ -166,17 +184,15 @@ public class GameThread implements Runnable {
             int maxWaves = gl.getMaxWaves(currentLevel);
             
             if (currentWave >= maxWaves) {
-                if (currentLevel >= 1) {
+                if (currentLevel >= gl.getMaxLevel()) {
                     gameWon = true;
                 } else {
-                    em.setLevel(currentLevel + 1);
-                    em.setWave(1);
-                    gl.switchBackground(currentLevel + 1);
-                    gl.loadLevel(em.getLevel());
+                    waitingForLevel = true;
+                    waitStartTime = System.currentTimeMillis();
                 }
             } else {
-                em.setWave(currentWave + 1);
-                gl.loadLevel(currentLevel);
+                waitingForNextWave = true;
+                waitStartTime = System.currentTimeMillis();
             }
         }
     }

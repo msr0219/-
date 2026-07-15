@@ -8,17 +8,18 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.HashSet;
 
-public class Player extends ElementObj {
-    private int hp = 3;
-    private int powerLevel = 1;
-    private int bulletDamage = 1;
-    private boolean hasShield = false;
-    private int speed = 10;
-    private long lastShootTime = 0;
-    private int shootInterval = 200;
-    private HashSet<Integer> keys = new HashSet<>();
-    private ElementManager em = ElementManager.getManager();
-    private ImageIcon shieldIcon;
+public abstract class Player extends ElementObj {
+    protected int hp = 3;
+    protected int powerLevel = 1;
+    protected int bulletDamage = 1;
+    protected boolean hasShield = false;
+    protected int speed = 10;
+    protected long lastShootTime = 0;
+    protected int shootInterval = 200;
+    protected HashSet<Integer> keys = new HashSet<>();
+    protected ElementManager em = ElementManager.getManager();
+    protected ImageIcon shieldIcon;
+    protected static final int HITBOX_SIZE = 5;
 
     public Player() {
         this.type = GameElement.PLAYER;
@@ -31,6 +32,9 @@ public class Player extends ElementObj {
         }
         if (hasShield && shieldIcon != null) {
             g.drawImage(shieldIcon.getImage(), x - 5, y - 5, shieldIcon.getIconWidth() / 2, shieldIcon.getIconHeight() / 2, null);
+        }
+        if (isSlowing()) {
+            showHitbox(g);
         }
     }
 
@@ -65,44 +69,12 @@ public class Player extends ElementObj {
         if (hasZ && canShoot) {
             lastShootTime = now;
             shoot();
-            System.out.println("Shooting!");
         }
     }
 
-    private void shoot() {
-        int bulletX = x + width / 4;
-        int bulletY = y - 10;
+    protected abstract void shoot();
 
-        switch (powerLevel) {
-            case 1:
-                createBullet(bulletX, bulletY, 0);
-                break;
-            case 2:
-                createBullet(bulletX - 15, bulletY, -2);
-                createBullet(bulletX + 15, bulletY, 2);
-                break;
-            case 3:
-                createBullet(bulletX, bulletY, 0);
-                createBullet(bulletX - 20, bulletY, -3);
-                createBullet(bulletX + 20, bulletY, 3);
-                break;
-            case 4:
-                createBullet(bulletX - 25, bulletY, -4);
-                createBullet(bulletX - 8, bulletY, -1);
-                createBullet(bulletX + 8, bulletY, 1);
-                createBullet(bulletX + 25, bulletY, 4);
-                break;
-            case 5:
-                createBullet(bulletX, bulletY, 0);
-                createBullet(bulletX - 30, bulletY, -5);
-                createBullet(bulletX - 15, bulletY, -2);
-                createBullet(bulletX + 15, bulletY, 2);
-                createBullet(bulletX + 30, bulletY, 5);
-                break;
-        }
-    }
-
-    private void createBullet(int bx, int by, int dx) {
+    protected void createBullet(int bx, int by, int dx) {
         PlayerBullet bullet = new PlayerBullet();
         bullet.setX(bx);
         bullet.setY(by);
@@ -116,20 +88,21 @@ public class Player extends ElementObj {
     public void keyClick(boolean isPressed, int key) {
         if (isPressed) {
             keys.add(key);
-            if (key == KeyEvent.VK_Z) {
-                System.out.println("Z key pressed, keys size: " + keys.size());
-            }
         } else {
             keys.remove(key);
         }
     }
 
     public void takeDamage() {
+        takeDamage(1);
+    }
+
+    public void takeDamage(int damage) {
         if (hasShield) {
             hasShield = false;
             return;
         }
-        hp--;
+        hp -= damage;
         if (hp <= 0) {
             hp = 0;
             live = false;
@@ -141,7 +114,7 @@ public class Player extends ElementObj {
     }
 
     public void addBulletDamage() {
-        if (bulletDamage < 3) bulletDamage++;
+        if (bulletDamage < 5) bulletDamage++;
     }
 
     public void addLife() {
@@ -153,11 +126,30 @@ public class Player extends ElementObj {
     }
 
     public void bomb() {
-        em.clearEnemies();
+        em.damageAllEnemies(100);
     }
 
     public int getHp() { return hp; }
+    public int getMaxHp() { return 5; }
     public int getPowerLevel() { return powerLevel; }
+    public int getMaxPowerLevel() { return 5; }
     public int getBulletDamage() { return bulletDamage; }
+    public int getMaxBulletDamage() { return 5; }
     public boolean isHasShield() { return hasShield; }
+
+    public Rectangle getHitbox() {
+        int hitboxX = x + width / 4 - HITBOX_SIZE / 2;
+        int hitboxY = y + height / 4 - HITBOX_SIZE / 2;
+        return new Rectangle(hitboxX, hitboxY, HITBOX_SIZE, HITBOX_SIZE);
+    }
+
+    public boolean isSlowing() {
+        return keys.contains(KeyEvent.VK_SHIFT);
+    }
+
+    public void showHitbox(Graphics g) {
+        Rectangle hitbox = getHitbox();
+        g.setColor(Color.RED);
+        g.fillRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+    }
 }

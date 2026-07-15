@@ -11,7 +11,7 @@ public class GameJFrame extends JFrame {
     private GameMainJPanel panel;
 
     public GameJFrame() {
-        setTitle("飞机大战");
+        setTitle("奶龙大战贝利亚");
         setSize(500, 725);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
